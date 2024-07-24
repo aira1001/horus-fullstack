@@ -7,7 +7,6 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.next()
     const url = request.nextUrl.clone()
     url.pathname = '/login'
-    console.log(request.headers)
 
     if (!cookie) {
         return NextResponse.rewrite(url)
