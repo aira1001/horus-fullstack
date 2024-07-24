@@ -5,6 +5,7 @@ import { SubmitButton } from "./submit-button";
 import bcrypt from 'bcrypt';
 import { serialize } from 'cookie'
 import { NextApiResponse } from "next";
+import { cookies } from "next/headers";
 
 
 export default function Login({
@@ -35,6 +36,13 @@ export default function Login({
           secure: process.env.NODE_ENV === 'production',
           maxAge: 60 * 60 * 24 * 7, // One week
           path: '/',
+        })
+        cookies().set({
+          name: 'nextjs',
+          value: JSON.stringify(encryptedSessionData),
+          httpOnly: true,
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7, // One week,
         })
         return redirect("/protected")
       } else {
