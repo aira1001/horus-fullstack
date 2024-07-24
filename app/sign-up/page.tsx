@@ -1,52 +1,44 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { SubmitButton } from "./submit-button";
+import { SubmitButton } from "../login/submit-button";
 import bcrypt from 'bcrypt';
-import { serialize } from 'cookie'
-import { NextApiResponse } from "next";
 
-
-export default function Login({
+export default function SignUp({
   searchParams,
-  res
 }: {
   searchParams: { message: string };
-  res: NextApiResponse
 }) {
-  const signIn = async (formData: FormData) => {
+
+  const signUp = async (formData: FormData) => {
     "use server";
 
+    const origin = headers().get("origin");
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const username = formData.get("username") as string;
+    const name = formData.get("name") as string;
     const supabase = createClient();
+    
+    const hashedPassword = await bcrypt.hash(password, 10)
+    console.log(hashedPassword)
+    
 
-    const user = await supabase.from('users').select("*").filter("email", "eq", email)
-    if (user.data?.length != 0) {
-      const passwordMatch = await bcrypt.compare(password, user.data?.[0].password)
+    const { error } = await supabase.from('users').insert({
+      username : username,
+      nama : name,
+      email : email,
+      password : hashedPassword,
+      tgl_daftar : new Date()
+    })
 
-      if (passwordMatch) {
-        const encryptedSessionData = {
-          email: bcrypt.hash(user?.data?.[0].email, 10),
-          username: bcrypt.hash(user?.data?.[0].username, 10)
-        }
-        const cookie = serialize('session', JSON.stringify(encryptedSessionData), {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 60 * 60 * 24 * 7, // One week
-          path: '/',
-        })
-        return redirect("/protected")
-      } else {
-        return redirect("/login?message=Password Wrong");
-
-      }
-    } else {
-      return redirect("/login?message=Email not found");
+    if (error) {
+      return redirect("/sign-up?message=Could not authenticate user");
     }
+
+    return redirect("/login?message=Check email to continue sign in process");
   };
-
-
 
   return (
     <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
@@ -72,6 +64,24 @@ export default function Login({
       </Link>
 
       <form className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
+        <label className="text-md" htmlFor="username">
+          Username
+        </label>
+        <input
+          className="rounded-md px-4 py-2 bg-inherit border mb-6"
+          name="username"
+          placeholder="Budi_Riwanto"
+          required
+        />
+        <label className="text-md" htmlFor="name">
+          Nama
+        </label>
+        <input
+          className="rounded-md px-4 py-2 bg-inherit border mb-6"
+          name="name"
+          placeholder="Budi Riwanto"
+          required
+        />
         <label className="text-md" htmlFor="email">
           Email
         </label>
@@ -92,13 +102,13 @@ export default function Login({
           required
         />
         <SubmitButton
-          formAction={signIn}
+          formAction={signUp}
           className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing In..."
+          pendingText="Signing Up..."
         >
-          Sign In
+          Sign Up
         </SubmitButton>
-        <p>Don't have an account? <a href="/sign-up" className="text-blue-500 hover:underline">Sign Up</a></p>
+        <p>Already have an Account ? <a href="/login" className="text-blue-500 hover:underline">Sign In</a></p>
 
         {searchParams?.message && (
           <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">

@@ -8,7 +8,11 @@
   "dependencies": {
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie": "^0.6.0",
     "autoprefixer": "10.4.17",
+    "bcrypt": "^5.1.1",
+    "cookie": "^0.6.0",
     "geist": "^1.2.1",
     "next": "latest",
     "postcss": "8.4.33",
