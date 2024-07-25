@@ -20,24 +20,24 @@ export default function SignUp({
     const username = formData.get("username") as string;
     const name = formData.get("name") as string;
     const supabase = createClient();
-    
+
     const hashedPassword = await bcrypt.hash(password, 10)
     console.log(hashedPassword)
-    
+
 
     const { error } = await supabase.from('users').insert({
-      username : username,
-      nama : name,
-      email : email,
-      password : hashedPassword,
-      tgl_daftar : new Date()
+      username: username,
+      nama: name,
+      email: email,
+      password: hashedPassword,
+      tgl_daftar: new Date()
     })
 
     if (error) {
       return redirect("/sign-up?message=Could not authenticate user");
     }
 
-    return redirect("/login?message=Check email to continue sign in process");
+    return redirect("/login?message=Input Your email and password");
   };
 
   return (
@@ -64,6 +64,8 @@ export default function SignUp({
       </Link>
 
       <form className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
+        <h1 className="text-3xl font-bold mb-3 text-center">Horus Voucher</h1>
+
         <label className="text-md" htmlFor="username">
           Username
         </label>

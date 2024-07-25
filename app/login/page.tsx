@@ -31,12 +31,8 @@ export default function Login({
           email: bcrypt.hash(user?.data?.[0].email, 10),
           username: bcrypt.hash(user?.data?.[0].username, 10)
         }
-        const cookie = serialize('session', JSON.stringify(encryptedSessionData), {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 60 * 60 * 24 * 7, // One week
-          path: '/',
-        })
+        
+        
         cookies().set({
           name: 'nextjs',
           value: JSON.stringify(encryptedSessionData),
@@ -80,6 +76,7 @@ export default function Login({
       </Link>
 
       <form className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
+        <h1 className="text-3xl font-bold mb-3 text-center">Horus Voucher</h1>
         <label className="text-md" htmlFor="email">
           Email
         </label>
