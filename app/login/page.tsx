@@ -31,16 +31,19 @@ export default function Login({
           email: bcrypt.hash(user?.data?.[0].email, 10),
           username: bcrypt.hash(user?.data?.[0].username, 10)
         }
-        
-        
         cookies().set({
           name: 'nextjs',
           value: JSON.stringify(encryptedSessionData),
           httpOnly: true,
           path: '/',
           maxAge: 60 * 60 * 24 * 7, // One week,
+        });
+        cookies().set({
+          name: 'username',
+          value: user?.data?.[0].username,
+          httpOnly: true,
         })
-        return redirect("/protected")
+        return redirect("/voucher")
       } else {
         return redirect("/login?message=Password Wrong");
 
