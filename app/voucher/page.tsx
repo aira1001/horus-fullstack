@@ -8,34 +8,50 @@ import { cookies } from "next/headers";
 
 export default async function ProtectedPage() {
   const user = cookies().get("username");
-
+  
+  const supabase = createClient();
+  
+  const {data, error} = await supabase.from("voucher").select("*, categories (name)")
+  if (error){
+    console.log(error)
+  }
+  
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
-      <div className="w-full">
-        <div className=" bg-purple-950 flex gap-7 ">
-          <div className="basis-1/4 items-center justify-center flex">
-            <div className="cursor-pointer border rounded-full bg-[url('/avatar-man.png')] bg-cover w-14 h-14 mx-4" />
-            <h1 className="font-semibold text-xl">{user?.value}</h1>
+      <div className="bg-purple-950 w-full">
+        <div className="container mx-auto flex gap-7 w-full justify-between">
+          <div className="items-center justify-center flex">
+            <div className="cursor-pointer border rounded-full bg-[url('/avatar-man.png')] bg-cover w-11 h-11 mx-4" />
+            <h1 className="font-semibold">{user?.value}</h1>
           </div>
-          <h1 className="py-6 font-bold  flex justify-center text-2xl basis-1/2">
+          <h1 className="py-6 font-bold  flex justify-center text-xl text-center items-center">
             List Voucher
           </h1>
-          <div className="basis-1/4 place-content-center">
-            <div className="justify-center items-center px-5 py-3 flex rounded-md no-underline hover:bg-btn-background-hover border lg:mx-36 cursor-pointer mx-8">
-              History
-            </div>
+          <div className="justify-center items-center py-2 px-4 flex m-7 rounded-md  hover:bg-purple-400 border cursor-pointer ">
+            History
           </div>
         </div>
+      </div>
+      <div className="grid grid-cols-3">
+        {data?.map((voucher) => (
+          <div className="border border-gray-300 rounded-md p-4 m-4 lg:col-span-1 flex gap-4 flex-col">
+            <h1 className="font-bold">{voucher.nama}</h1>
+            <h1>{voucher.categories.name}</h1>
+            <button type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">Claim</button>
 
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-            <DeployButton />
-            <AuthButton />
           </div>
-        </nav>
+        ))}
+        
       </div>
 
-      <div className="flex-1 flex flex-col gap-20 max-w-4xl px-3">
+      {/* <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+        <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
+          <DeployButton />
+          <AuthButton />
+        </div>
+      </nav> */}
+
+      {/* <div className="flex-1 flex flex-col gap-20 max-w-4xl px-3">
         <Header />
         <main className="flex-1 flex flex-col gap-6">
           <h2 className="font-bold text-4xl mb-4">Next steps</h2>
@@ -55,7 +71,7 @@ export default async function ProtectedPage() {
             Supabase
           </a>
         </p>
-      </footer>
+      </footer> */}
     </div>
   );
 }
